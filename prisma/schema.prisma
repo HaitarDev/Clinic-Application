@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id String @id @default(cuid())  // WE JUST USE THIS ID AS A CART ID BUT IN REAL WORLD WE NEED THE REAL CART ID OF THE USER
+  name String @unique 
+  gender Gender @default(M)
+  email String @unique
+  password String
+  confirmPassword String? 
+  passwordResetToken String?
+  role Role @default(PATIENT)
+  doctor Doctor?
+  patient Patient?
+}
+
+enum Gender {
+  M
+  F
+}
+
+enum Role {
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+
+model Patient {
+  id String @id @default(cuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique 
+  appointement Appointement?
+  appointementHisory AppointementHistory[]
+}
+
+model AppointementHistory {
+  id String @id @default(cuid())
+  patientId String 
+  patient Patient @relation(fields: [patientId], references: [id])
+  appointementDate DateTime @default(now())
+  age Int 
+  doctorNote String 
+  diseaseName String?
+  isThereIsControll Boolean
+}
+
+model Doctor { 
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialization String
+  offDays DateTime[]
+  appointement Appointement[]
+}
+
+model Appointement {
+  id String @id @default(cuid())
+  doctorId String @unique
+  doctor Doctor @relation(fields: [doctorId], references: [id])
+  patientId String @unique
+  patient Patient @relation(fields: [patientId], references: [id])
+
+  startDate DateTime  @default(now())
+  endDate DateTime  
+}
