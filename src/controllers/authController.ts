@@ -9,13 +9,21 @@ import { User } from "@prisma/client";
 import { sentEmail } from "../utils/email";
 import { sentToken, signToken } from "../utils/authToken";
 
+interface RegisterBody {
+  email: string;
+  name: string;
+  password: string;
+  confirmPassword: string;
+  age: number;
+}
+
 export async function registrerController(
-  req: Request<{}, {}, User>,
+  req: Request<{}, {}, RegisterBody>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { email, name, password, confirmPassword } = req.body;
+    const { email, name, age, password, confirmPassword } = req.body;
     if (!email || !password || !confirmPassword)
       return next(new AppError(500, "There is no info"));
 
@@ -31,8 +39,9 @@ export async function registrerController(
 
     const user = await prisma.user.create({
       data: {
-        email: email,
-        name: name,
+        email,
+        name,
+        age,
         password: hashPassword,
       },
     });

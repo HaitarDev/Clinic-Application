@@ -17,6 +17,7 @@ datasource db {
 model User {
   id String @id @default(cuid())  // WE JUST USE THIS ID AS A CART ID BUT IN REAL WORLD WE NEED THE REAL CART ID OF THE USER
   name String @unique 
+  age Int 
   gender Gender @default(M)
   email String @unique
   password String
@@ -52,7 +53,6 @@ model AppointementHistory {
   patientId String 
   patient Patient @relation(fields: [patientId], references: [id])
   appointementDate DateTime @default(now())
-  age Int 
   doctorNote String 
   diseaseName String?
   isThereIsControll Boolean
@@ -69,11 +69,13 @@ model Doctor {
 
 model Appointement {
   id String @id @default(cuid())
-  doctorId String @unique
+  doctorId String 
   doctor Doctor @relation(fields: [doctorId], references: [id])
   patientId String @unique
   patient Patient @relation(fields: [patientId], references: [id])
 
   startDate DateTime  @default(now())
   endDate DateTime  
+
+  isControll Boolean @default(false)
 }

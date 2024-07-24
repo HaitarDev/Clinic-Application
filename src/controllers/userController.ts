@@ -161,7 +161,6 @@ export async function updateUserRole(
       },
       data: userRoleInfo,
     });
-    console.log(updatedUser);
     const freshToken = signToken(updatedUser.id);
     sentToken(res, freshToken, updatedUser);
   } catch (error: any) {
